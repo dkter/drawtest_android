@@ -33,12 +33,12 @@ class PenStroke {
     private var pathIsValid: Boolean = true
 
     fun add(x: Float, y: Float, pressure: Float) {
-        points.add(PenPoint(x, y, pressure))
         pathIsValid = false
+        points.add(PenPoint(x, y, pressure))
     }
 
     private fun pressureToRadius(pressure: Float): Float {
-        return pressure * 50F
+        return pressure * 4F
     }
 
     fun getPoints() = points
@@ -138,8 +138,7 @@ class PenStroke {
 class DrawWidget(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val inkPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
-        strokeWidth = 1F
-        style = Paint.Style.STROKE
+        style = Paint.Style.FILL
         strokeCap = Paint.Cap.ROUND
     }
     private var strokes: ArrayList<PenStroke> = ArrayList()
@@ -149,10 +148,6 @@ class DrawWidget(context: Context, attrs: AttributeSet) : View(context, attrs) {
         canvas?.apply {
             for (stroke in strokes) {
                 drawPath(stroke.renderPath(), inkPaint)
-
-                for (point in stroke.getPoints()) {
-                    drawPoint(point.x, point.y, inkPaint)
-                }
             }
         }
     }
