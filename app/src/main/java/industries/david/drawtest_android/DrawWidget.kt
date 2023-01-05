@@ -34,7 +34,11 @@ class PenStroke {
 
     fun add(x: Float, y: Float, pressure: Float) {
         pathIsValid = false
-        points.add(PenPoint(x, y, pressure))
+        val new_point = PenPoint(x, y, pressure)
+        if (points.size > 0 && new_point.x == points.last().x && new_point.y == points.last().y) {
+            return
+        }
+        points.add(new_point)
     }
 
     private fun pressureToRadius(pressure: Float): Float {
@@ -117,6 +121,7 @@ class PenStroke {
             }
 
             newpath.close()
+            newpath.fillType = Path.FillType.WINDING
             path = newpath
             pathIsValid = true
         }
