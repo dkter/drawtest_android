@@ -32,10 +32,6 @@ class PenStroke {
     private var path: Path = Path()
     private var pathIsValid: Boolean = true
 
-    init {
-        Log.d("testing!!!!!", "new PenStroke created")
-    }
-
     fun add(x: Float, y: Float, pressure: Float) {
         points.add(PenPoint(x, y, pressure))
         pathIsValid = false
@@ -52,7 +48,7 @@ class PenStroke {
             if (points.size == 0) {
                 path = Path()
                 pathIsValid = true
-                return path//@Runnable
+                return path
             }
 
             if (points.size == 1) {
@@ -61,7 +57,7 @@ class PenStroke {
                 newpath.addCircle(points[0].x, points[0].y, pressureToRadius(points[0].pressure), Path.Direction.CW)
                 path = newpath
                 pathIsValid = true
-                return path//@Runnable
+                return path
             }
 
             // starting cap (round)
@@ -94,7 +90,6 @@ class PenStroke {
                     angle_to_prev += 2*FPI
                 }
                 val angle1 = (angle_to_prev + angle_to_next) / 2
-                //val angle2 = -(2*FPI - (-(2*FPI-angle_to_prev) - (2*FPI-angle_to_next)) / 2)
                 val angle2 = angle1 + FPI  // rotate by 180deg
 
                 val vec1 = Float2(radius * cos(angle1), radius * sin(angle1))
@@ -125,18 +120,6 @@ class PenStroke {
             path = newpath
             pathIsValid = true
         }
-
-
-
-//        for (pair in points) {
-//            if (path == null) {
-//                path = Path()
-//                path!!.moveTo(pair.x, pair.y)
-//            }
-//            else {
-//                path!!.lineTo(pair.x, pair.y)
-//            }
-//        }
 
         return path
     }
@@ -188,8 +171,6 @@ class DrawWidget(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event?.apply {
-            Log.d("### testing ###", "Button state: $buttonState")
-
             val toolType = event.getToolType(0)
             if (toolType == MotionEvent.TOOL_TYPE_STYLUS) {
                 if (action == MotionEvent.ACTION_DOWN) {
@@ -203,7 +184,6 @@ class DrawWidget(context: Context, attrs: AttributeSet) : View(context, attrs) {
                     erase(x, y)
                 }
                 else {
-                    Log.d("#######################", "The action is ${action}")
                     return false
                 }
             }
@@ -216,7 +196,6 @@ class DrawWidget(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 }
             }
             else {
-                Log.d("############", "The tool type is ${toolType}")
                 return false
             }
         }
