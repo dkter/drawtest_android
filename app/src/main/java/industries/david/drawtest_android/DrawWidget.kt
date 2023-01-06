@@ -65,16 +65,21 @@ class PenStroke {
             }
 
             // starting cap (round)
-            // start with a square for now
             val first_to_second = normalize(Float2(points[1].x - points[0].x, points[1].y - points[0].y))
             val point0 = points[0].asFloat2()
             val radius0 = pressureToRadius(points[0].pressure)
             val cw_vec = Float2(first_to_second.y, -first_to_second.x) * radius0 + point0
             val ccw_vec = Float2(-first_to_second.y, first_to_second.x) * radius0 + point0
+            val node1 = cw_vec - first_to_second * radius0 * 2F
+            val node2 = ccw_vec - first_to_second * radius0 * 2F
 
             val newpath = Path()
             newpath.moveTo(cw_vec.x, cw_vec.y)
-            newpath.lineTo(ccw_vec.x, ccw_vec.y)
+            newpath.cubicTo(
+                node1.x, node1.y,
+                node2.x, node2.y,
+                ccw_vec.x, ccw_vec.y
+            )
 
             // middle of path
             val return_points = ArrayList<Float2>()
@@ -112,8 +117,14 @@ class PenStroke {
             val radius_last = pressureToRadius(points.last().pressure)
             val cw_vec_last = Float2(last_to_2last.y, -last_to_2last.x) * radius_last + point_last
             val ccw_vec_last = Float2(-last_to_2last.y, last_to_2last.x) * radius_last + point_last
+            val node1_last = cw_vec_last - last_to_2last * radius_last * 2F
+            val node2_last = ccw_vec_last - last_to_2last * radius_last * 2F
             newpath.lineTo(cw_vec_last.x, cw_vec_last.y)
-            newpath.lineTo(ccw_vec_last.x, ccw_vec_last.y)
+            newpath.cubicTo(
+                node1_last.x, node1_last.y,
+                node2_last.x, node2_last.y,
+                ccw_vec_last.x, ccw_vec_last.y
+            )
 
             // other side of the path
             for (point in return_points.reversed()) {
