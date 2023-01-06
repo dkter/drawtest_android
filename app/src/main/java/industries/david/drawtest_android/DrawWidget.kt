@@ -13,6 +13,7 @@ import android.view.View
 import dev.romainguy.kotlin.math.PI as FPI
 import dev.romainguy.kotlin.math.Float2
 import dev.romainguy.kotlin.math.normalize
+import dev.romainguy.kotlin.math.sqr
 import kotlin.math.*
 
 const val S_PEN_BUTTON_DOWN = 211;
@@ -47,8 +48,48 @@ class PenStroke {
 
     fun getPoints() = points
 
+    fun trimPoints() {
+        var startingIndex = 0
+        points.forEachIndexed { index, point ->
+            var works = true
+            points.slice(0 until index).forEach { point2 ->
+                val distance = sqrt(sqr(point.x - point2.x) + sqr(point.y - point2.y))
+                if (distance + pressureToRadius(point2.pressure) > pressureToRadius(point.pressure)) {
+                    // point2 can't be discarded
+                    works = false
+                }
+            }
+            if (works) {
+                startingIndex = index
+            }
+        }
+        for (i in 0 until startingIndex) {
+            points.removeFirst()
+        }
+
+        var endingReverseIndex = 0
+        points.reversed().forEachIndexed { index, point ->
+            var works = true
+            points.reversed().slice(0 until index).forEach { point2 ->
+                val distance = sqrt(sqr(point.x - point2.x) + sqr(point.y - point2.y))
+                if (distance + pressureToRadius(point2.pressure) > pressureToRadius(point.pressure)) {
+                    // point2 can't be discarded
+                    works = false
+                }
+            }
+            if (works) {
+                endingReverseIndex = index
+            }
+        }
+        for (i in 0 until endingReverseIndex) {
+            points.removeLast()
+        }
+    }
+
     fun renderPath(): Path {
         if (!pathIsValid) {
+            trimPoints()
+
             if (points.size == 0) {
                 path = Path()
                 pathIsValid = true
