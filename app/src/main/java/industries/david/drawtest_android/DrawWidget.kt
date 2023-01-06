@@ -182,9 +182,26 @@ class PenStroke {
     }
 
     fun collidesWith(x: Float, y: Float): Boolean {
-        val radius = 20F
+        val radius = 10F
         for (point in points) {
             if (abs(point.x - x) <= radius && abs(point.y - y) <= radius) {
+                return true
+            }
+        }
+        for (index in 0 until points.size - 1) {
+            val point1 = points[index]
+            val point2 = points[index + 1]
+            // distance between point and a line
+            val distance = abs(
+                    (
+                            (point2.x - point1.x) * (point1.y - y)
+                            - (point1.x - x) * (point2.y - point1.y)
+                    ) / sqrt(
+                            sqr(point2.x - point1.x)
+                            + sqr(point2.y - point1.y)
+                    )
+            )
+            if (distance <= radius) {
                 return true
             }
         }
