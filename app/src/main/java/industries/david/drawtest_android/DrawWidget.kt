@@ -191,18 +191,21 @@ class PenStroke {
         for (index in 0 until points.size - 1) {
             val point1 = points[index]
             val point2 = points[index + 1]
-            // distance between point and a line
-            val distance = abs(
+            // try to make sure (x, y) is actually in between the two points, ie we're not extrapolating
+            if ((point1.x <= x && x <= point2.x) || (point1.y <= y && y <= point2.y)) {
+                // distance between point and a line
+                val distance = abs(
                     (
                             (point2.x - point1.x) * (point1.y - y)
-                            - (point1.x - x) * (point2.y - point1.y)
-                    ) / sqrt(
-                            sqr(point2.x - point1.x)
-                            + sqr(point2.y - point1.y)
+                                    - (point1.x - x) * (point2.y - point1.y)
+                            ) / sqrt(
+                        sqr(point2.x - point1.x)
+                                + sqr(point2.y - point1.y)
                     )
-            )
-            if (distance <= radius) {
-                return true
+                )
+                if (distance <= radius) {
+                    return true
+                }
             }
         }
         return false
